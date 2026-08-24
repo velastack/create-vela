@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+  id-token: write # required for npm provenance / trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          # Node 24 ships npm 11.x, required for OIDC trusted publishing (>= 11.5.1).
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify tag matches package.json version
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "Tag $TAG_VERSION does not match package.json version $PKG_VERSION"
+            exit 1
+          fi
+
+      # `npm create vela` installs whatever this range resolves to. If it stops
+      # reaching the current vela, every new project is scaffolded from stale
+      # templates, so block the release rather than ship that quietly.
+      - name: Verify the vela range reaches the current release
+        run: |
+          RANGE=$(node -p "require('./package.json').dependencies.vela")
+          RESOLVED=$(npm view "vela@$RANGE" version --json \
+            | node -e "let s='';process.stdin.on('data',(d)=>(s+=d)).on('end',()=>{const v=JSON.parse(s);console.log(Array.isArray(v)?v.at(-1):v)})")
+          LATEST=$(npm view vela version)
+          echo "\"$RANGE\" resolves to $RESOLVED; latest vela is $LATEST"
+          if [ "$RESOLVED" != "$LATEST" ]; then
+            echo "create-vela would install vela $RESOLVED — widen the range to reach $LATEST"
+            exit 1
+          fi
+
+      - run: npx prettier@3.9.6 --check .
+      - run: npm run smoke
+
+      - name: Publish to npm
+        run: npm publish --access public --provenance

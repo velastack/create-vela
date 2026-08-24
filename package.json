@@ -1,0 +1,39 @@
+{
+	"name": "create-vela",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "Scaffold a VelaStack project with `npm create vela`",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/velastack/create-vela.git"
+	},
+	"homepage": "https://velastack.dev",
+	"engines": {
+		"node": ">=20"
+	},
+	"bin": {
+		"create-vela": "./bin.js"
+	},
+	"files": [
+		"bin.js"
+	],
+	"keywords": [
+		"svelte",
+		"sveltekit",
+		"velastack",
+		"pocketbase",
+		"cli",
+		"starter",
+		"template",
+		"create"
+	],
+	"scripts": {
+		"lint": "prettier --check .",
+		"format": "prettier --write .",
+		"smoke": "./scripts/smoke.sh"
+	},
+	"dependencies": {
+		"vela": "^0.9.0"
+	}
+}

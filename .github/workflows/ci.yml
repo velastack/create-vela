@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Unlike the vela repo there is no build step here, so `engines: >=20`
+        # is a claim this matrix can actually check.
+        node-version: [20, 22, 24]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # No devDependencies and no lockfile to install: the only dependency is
+      # vela, and the smoke test pulls that in the way a user would.
+      - name: Lint
+        run: npx prettier@3.9.6 --check .
+
+      - name: Smoke test
+        run: npm run smoke
