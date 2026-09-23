@@ -1,6 +1,6 @@
 {
 	"name": "create-vela",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"type": "module",
 	"description": "Scaffold a VelaStack project with `npm create vela`",
 	"license": "MIT",
