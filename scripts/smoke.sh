@@ -31,4 +31,9 @@ echo "→ scaffolding"
 grep -q "name: 'Smoke App'" smoke-app/src/lib/site.ts \
 	|| { echo "✗ --name did not reach the template"; exit 1; }
 
+echo "→ scaffolding through the registry's latest vela"
+CREATE_VELA_LATEST=1 ./node_modules/.bin/create-vela latest-app --template static --no-install --name 'Latest App' >/dev/null
+grep -q "name: 'Latest App'" latest-app/src/lib/site.ts \
+	|| { echo "✗ the latest-vela path did not scaffold"; exit 1; }
+
 echo "✓ smoke test passed"

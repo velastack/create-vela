@@ -32,7 +32,17 @@ in-process, so prompts, colors, and the exit code pass straight through without
 the cost of a second Node process. It finds that bin by reading the path `vela`
 declares in its own manifest, rather than hardcoding one.
 
-The `vela` dependency range is what `npm create vela` actually installs. CI
-smoke-tests a real scaffold against it, and a release is blocked if the range no
-longer reaches the current `vela` — otherwise new projects would quietly be
-built from stale templates.
+It always runs the newest `vela`. npx caches `create-vela` by its own version
+and never re-resolves its dependencies, so the `vela` installed beside it is
+whatever was newest the first time `npm create vela` ran on that machine. Before
+loading it, `bin.js` asks the registry for `vela`'s `latest` (honouring
+`npm_config_registry`, with a three-second timeout). When that is newer, it runs
+`npx vela@<latest> create` instead, through npm's own npx and this Node, and
+passes the exit code back. When the registry can't be reached, the installed
+`vela` runs. So `create-vela` only needs a release when `bin.js` changes, not
+for every `vela` release.
+
+The `vela` dependency is an open range (`>=`), so a first install gets the newest
+release and skips the second step. CI smoke-tests a real scaffold down both
+paths (`CREATE_VELA_LATEST=1` forces the registry one), and a release is blocked
+if the range no longer reaches the current `vela`.
