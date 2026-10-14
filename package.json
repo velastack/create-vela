@@ -1,6 +1,6 @@
 {
 	"name": "create-vela",
-	"version": "0.1.1",
+	"version": "0.15.6",
 	"type": "module",
 	"description": "Scaffold a VelaStack project with `npm create vela`",
 	"license": "MIT",
@@ -34,6 +34,6 @@
 		"smoke": "./scripts/smoke.sh"
 	},
 	"dependencies": {
-		"vela": "^0.15.0"
+		"vela": ">=0.15.6"
 	}
 }
