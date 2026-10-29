@@ -10,7 +10,7 @@
 	},
 	"homepage": "https://velastack.dev",
 	"engines": {
-		"node": ">=20"
+		"node": ">=22.17"
 	},
 	"bin": {
 		"create-vela": "./bin.js"

@@ -19,9 +19,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Unlike the vela repo there is no build step here, so `engines: >=20`
-        # is a claim this matrix can actually check.
-        node-version: [20, 22, 24]
+        # 22.17 is the floor: vela (the only dependency) requires it, and so does
+        # SvelteKit 3. There is no build step here, so `engines` is a claim this
+        # matrix can actually check; 20 was dropped because vela cannot run there.
+        node-version: ['22.17', 24]
 
     steps:
       - uses: actions/checkout@v7
